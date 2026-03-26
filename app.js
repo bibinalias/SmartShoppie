@@ -6,17 +6,17 @@
 'use strict';
 
 /* ── Constants ──────────────────────────────────────── */
-const API_BASE   = 'https://dummyjson.com';
-const PAGE_SIZE  = 20;
+const API_BASE = 'https://dummyjson.com';
+const PAGE_SIZE = 20;
 
 /* ── State ──────────────────────────────────────────── */
-let allProducts   = [];     // all products fetched from API
-let filtered      = [];     // after client-side filter/search
-let categories    = [];     // list of category names
-let currentPage   = 1;
+let allProducts = []; // all products fetched from API
+let filtered = []; // after client-side filter/search
+let categories = []; // list of category names
+let currentPage = 1;
 let totalProducts = 0;
-let isListView    = false;
-let searchTimer   = null;
+let isListView = false;
+let searchTimer = null;
 
 const filters = {
   category: null,
@@ -25,25 +25,25 @@ const filters = {
   minRating: 0,
   inStock: false,
   search: '',
-  sort: 'default'
+  sort: 'default',
 };
 
 /* ── DOM Refs ────────────────────────────────────────── */
-const productGrid   = () => document.getElementById('productGrid');
-const resultsCount  = () => document.getElementById('resultsCount');
-const emptyState    = () => document.getElementById('emptyState');
-const pagination    = () => document.getElementById('pagination');
-const categoryList  = () => document.getElementById('categoryList');
+const productGrid = () => document.getElementById('productGrid');
+const resultsCount = () => document.getElementById('resultsCount');
+const emptyState = () => document.getElementById('emptyState');
+const pagination = () => document.getElementById('pagination');
+const categoryList = () => document.getElementById('categoryList');
 const activeFilters = () => document.getElementById('activeFilters');
-const heroBanner    = () => document.getElementById('heroBanner');
-const heroStats     = () => document.getElementById('heroStats');
+const heroBanner = () => document.getElementById('heroBanner');
+const heroStats = () => document.getElementById('heroStats');
 
 /* =====================================================
    API FUNCTIONS
    ===================================================== */
 async function fetchAllProducts() {
   try {
-    const res  = await fetch(`${API_BASE}/products?limit=0`);
+    const res = await fetch(`${API_BASE}/products?limit=0`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return data.products || [];
@@ -55,7 +55,7 @@ async function fetchAllProducts() {
 
 async function fetchCategories() {
   try {
-    const res  = await fetch(`${API_BASE}/products/categories`);
+    const res = await fetch(`${API_BASE}/products/categories`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch {
@@ -78,9 +78,9 @@ async function init() {
   // Fetch data in parallel
   const [products, cats] = await Promise.all([fetchAllProducts(), fetchCategories()]);
 
-  allProducts   = products;
+  allProducts = products;
   totalProducts = products.length;
-  categories    = cats;
+  categories = cats;
 
   renderHeroStats();
   renderCategoryList();
@@ -91,9 +91,11 @@ async function init() {
    RENDER HERO STATS
    ===================================================== */
 function renderHeroStats() {
-  const cats    = new Set(allProducts.map(p => p.category)).size;
-  const brands  = new Set(allProducts.map(p => p.brand).filter(Boolean)).size;
-  const avgDisc = (allProducts.reduce((s, p) => s + (p.discountPercentage || 0), 0) / allProducts.length).toFixed(0);
+  const cats = new Set(allProducts.map((p) => p.category)).size;
+  const brands = new Set(allProducts.map((p) => p.brand).filter(Boolean)).size;
+  const avgDisc = (
+    allProducts.reduce((s, p) => s + (p.discountPercentage || 0), 0) / allProducts.length
+  ).toFixed(0);
 
   heroStats().innerHTML = `
     <div class="hero-stat">
@@ -124,7 +126,9 @@ function renderCategoryList() {
 
   // Count per category
   const counts = {};
-  allProducts.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
+  allProducts.forEach((p) => {
+    counts[p.category] = (counts[p.category] || 0) + 1;
+  });
 
   const all = document.createElement('div');
   all.className = 'category-item active';
@@ -134,9 +138,9 @@ function renderCategoryList() {
   list.appendChild(all);
 
   // Support both array of strings and array of objects
-  const catNames = categories.map(c => (typeof c === 'string' ? c : c.name || c.slug || c));
+  const catNames = categories.map((c) => (typeof c === 'string' ? c : c.name || c.slug || c));
 
-  catNames.forEach(cat => {
+  catNames.forEach((cat) => {
     const el = document.createElement('div');
     el.className = 'category-item';
     el.dataset.cat = cat;
@@ -151,7 +155,7 @@ function selectCategory(cat) {
   filters.category = cat || null;
   currentPage = 1;
   // Update active state
-  document.querySelectorAll('.category-item').forEach(el => {
+  document.querySelectorAll('.category-item').forEach((el) => {
     el.classList.toggle('active', el.dataset.cat === (cat || ''));
   });
   applyFiltersAndRender();
@@ -165,43 +169,57 @@ function applyFiltersAndRender() {
 
   // Category
   if (filters.category) {
-    result = result.filter(p => p.category === filters.category);
+    result = result.filter((p) => p.category === filters.category);
   }
 
   // Search
   if (filters.search.trim()) {
     const q = filters.search.toLowerCase();
-    result = result.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q) ||
-      (p.brand || '').toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q) ||
-      (p.tags || []).some(t => t.toLowerCase().includes(q))
+    result = result.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q) ||
+        (p.brand || '').toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        (p.tags || []).some((t) => t.toLowerCase().includes(q))
     );
   }
 
   // Price
-  result = result.filter(p => p.price >= filters.minPrice && p.price <= filters.maxPrice);
+  result = result.filter((p) => p.price >= filters.minPrice && p.price <= filters.maxPrice);
 
   // Rating
   if (filters.minRating > 0) {
-    result = result.filter(p => (p.rating || 0) >= filters.minRating);
+    result = result.filter((p) => (p.rating || 0) >= filters.minRating);
   }
 
   // In-stock
   if (filters.inStock) {
-    result = result.filter(p => p.availabilityStatus === 'In Stock' || (p.stock && p.stock > 0));
+    result = result.filter((p) => p.availabilityStatus === 'In Stock' || (p.stock && p.stock > 0));
   }
 
   // Sort
   switch (filters.sort) {
-    case 'price-asc':     result.sort((a, b) => a.price - b.price); break;
-    case 'price-desc':    result.sort((a, b) => b.price - a.price); break;
-    case 'rating-desc':   result.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
-    case 'discount-desc': result.sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0)); break;
-    case 'name-asc':      result.sort((a, b) => a.title.localeCompare(b.title)); break;
-    case 'name-desc':     result.sort((a, b) => b.title.localeCompare(a.title)); break;
-    default: break; // featured: keep original order
+    case 'price-asc':
+      result.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-desc':
+      result.sort((a, b) => b.price - a.price);
+      break;
+    case 'rating-desc':
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      break;
+    case 'discount-desc':
+      result.sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0));
+      break;
+    case 'name-asc':
+      result.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'name-desc':
+      result.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+    default:
+      break; // featured: keep original order
   }
 
   filtered = result;
@@ -213,8 +231,8 @@ function applyFiltersAndRender() {
 
 function renderResultsCount() {
   const start = (currentPage - 1) * PAGE_SIZE + 1;
-  const end   = Math.min(currentPage * PAGE_SIZE, filtered.length);
-  const rc    = resultsCount();
+  const end = Math.min(currentPage * PAGE_SIZE, filtered.length);
+  const rc = resultsCount();
   if (filtered.length === 0) {
     rc.textContent = 'No products found';
   } else {
@@ -244,7 +262,7 @@ function renderActiveFilters() {
     tags.push({ label: 'In Stock', key: 'inStock' });
   }
 
-  tags.forEach(tag => {
+  tags.forEach((tag) => {
     const span = document.createElement('span');
     span.className = 'filter-tag';
     span.innerHTML = `${tag.label} <button onclick="removeFilter('${tag.key}')"><i class="fa-solid fa-xmark"></i></button>`;
@@ -252,36 +270,58 @@ function renderActiveFilters() {
   });
 }
 
-window.removeFilter = function(key) {
-  if (key === 'category') { filters.category = null; selectCategory(''); }
-  else if (key === 'search') { filters.search = ''; document.getElementById('searchInput').value = ''; document.getElementById('searchClearBtn').classList.add('hidden'); }
-  else if (key === 'price') { filters.minPrice = 0; filters.maxPrice = 2000; document.getElementById('minPrice').value = 0; document.getElementById('maxPrice').value = 2000; document.getElementById('minPriceDisplay').textContent = '0'; document.getElementById('maxPriceDisplay').textContent = '2000'; }
-  else if (key === 'rating') { filters.minRating = 0; document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', b.dataset.rating === '0')); }
-  else if (key === 'inStock') { filters.inStock = false; document.getElementById('inStockOnly').checked = false; }
+window.removeFilter = function (key) {
+  if (key === 'category') {
+    filters.category = null;
+    selectCategory('');
+  } else if (key === 'search') {
+    filters.search = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchClearBtn').classList.add('hidden');
+  } else if (key === 'price') {
+    filters.minPrice = 0;
+    filters.maxPrice = 2000;
+    document.getElementById('minPrice').value = 0;
+    document.getElementById('maxPrice').value = 2000;
+    document.getElementById('minPriceDisplay').textContent = '0';
+    document.getElementById('maxPriceDisplay').textContent = '2000';
+  } else if (key === 'rating') {
+    filters.minRating = 0;
+    document
+      .querySelectorAll('.star-btn')
+      .forEach((b) => b.classList.toggle('active', b.dataset.rating === '0'));
+  } else if (key === 'inStock') {
+    filters.inStock = false;
+    document.getElementById('inStockOnly').checked = false;
+  }
   currentPage = 1;
   applyFiltersAndRender();
 };
 
-window.resetFilters = function() {
+window.resetFilters = function () {
   filters.category = null;
-  filters.search   = '';
+  filters.search = '';
   filters.minPrice = 0;
   filters.maxPrice = 2000;
   filters.minRating = 0;
-  filters.inStock  = false;
-  filters.sort     = 'default';
-  currentPage      = 1;
+  filters.inStock = false;
+  filters.sort = 'default';
+  currentPage = 1;
 
-  document.getElementById('searchInput').value   = '';
+  document.getElementById('searchInput').value = '';
   document.getElementById('searchClearBtn').classList.add('hidden');
-  document.getElementById('minPrice').value      = 0;
-  document.getElementById('maxPrice').value      = 2000;
+  document.getElementById('minPrice').value = 0;
+  document.getElementById('maxPrice').value = 2000;
   document.getElementById('minPriceDisplay').textContent = '0';
   document.getElementById('maxPriceDisplay').textContent = '2000';
   document.getElementById('inStockOnly').checked = false;
-  document.getElementById('sortSelect').value    = 'default';
-  document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', b.dataset.rating === '0'));
-  document.querySelectorAll('.category-item').forEach(el => el.classList.toggle('active', el.dataset.cat === ''));
+  document.getElementById('sortSelect').value = 'default';
+  document
+    .querySelectorAll('.star-btn')
+    .forEach((b) => b.classList.toggle('active', b.dataset.rating === '0'));
+  document
+    .querySelectorAll('.category-item')
+    .forEach((el) => el.classList.toggle('active', el.dataset.cat === ''));
 
   applyFiltersAndRender();
 };
@@ -296,7 +336,7 @@ function renderProducts() {
 
   // Paginate
   const start = (currentPage - 1) * PAGE_SIZE;
-  const page  = filtered.slice(start, start + PAGE_SIZE);
+  const page = filtered.slice(start, start + PAGE_SIZE);
 
   if (page.length === 0) {
     grid.innerHTML = '';
@@ -374,7 +414,9 @@ function buildProductCard(p) {
 
   // Click to open modal
   card.addEventListener('click', () => openModal(p.id));
-  card.addEventListener('keydown', e => { if (e.key === 'Enter') openModal(p.id); });
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') openModal(p.id);
+  });
 
   return card;
 }
@@ -383,9 +425,9 @@ function buildProductCard(p) {
 function renderStarsHTML(rating = 0) {
   let html = '';
   for (let i = 1; i <= 5; i++) {
-    if (rating >= i)       html += '<i class="fa-solid fa-star"></i>';
+    if (rating >= i) html += '<i class="fa-solid fa-star"></i>';
     else if (rating >= i - 0.5) html += '<i class="fa-solid fa-star-half-stroke"></i>';
-    else                   html += '<i class="fa-regular fa-star"></i>';
+    else html += '<i class="fa-regular fa-star"></i>';
   }
   return html;
 }
@@ -405,18 +447,22 @@ function escapeHtml(str) {
    ===================================================== */
 function renderPagination() {
   const total = Math.ceil(filtered.length / PAGE_SIZE);
-  const el    = pagination();
+  const el = pagination();
   if (!el) return;
-  if (total <= 1) { el.innerHTML = ''; return; }
+  if (total <= 1) {
+    el.innerHTML = '';
+    return;
+  }
 
   let html = '';
   html += `<button class="page-btn" onclick="gotoPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
               <i class="fa-solid fa-chevron-left"></i></button>`;
 
   const pages = getPageRange(currentPage, total);
-  pages.forEach(p => {
+  pages.forEach((p) => {
     if (p === '...') html += `<span class="page-dots">…</span>`;
-    else html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="gotoPage(${p})">${p}</button>`;
+    else
+      html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="gotoPage(${p})">${p}</button>`;
   });
 
   html += `<button class="page-btn" onclick="gotoPage(${currentPage + 1})" ${currentPage === total ? 'disabled' : ''}>
@@ -435,9 +481,10 @@ function getPageRange(cur, total) {
   if (cur + delta < total - 1) range.push('...');
   range.unshift(1);
   if (total > 1) range.push(total);
-  range.forEach(i => {
+  range.forEach((i) => {
     if (l) {
-      if (i === '...' && rangeWithDots[rangeWithDots.length - 1] !== '...') rangeWithDots.push('...');
+      if (i === '...' && rangeWithDots[rangeWithDots.length - 1] !== '...')
+        rangeWithDots.push('...');
       else if (i !== '...') rangeWithDots.push(i);
     } else rangeWithDots.push(i);
     if (i !== '...') l = i;
@@ -445,7 +492,7 @@ function getPageRange(cur, total) {
   return rangeWithDots;
 }
 
-window.gotoPage = function(page) {
+window.gotoPage = function (page) {
   const total = Math.ceil(filtered.length / PAGE_SIZE);
   if (page < 1 || page > total) return;
   currentPage = page;
@@ -458,28 +505,35 @@ window.gotoPage = function(page) {
 /* =====================================================
    PRODUCT MODAL
    ===================================================== */
-window.openModal = function(id) {
-  const product = allProducts.find(p => p.id === id);
+window.openModal = function (id) {
+  const product = allProducts.find((p) => p.id === id);
   if (!product) return;
 
-  const overlay  = document.getElementById('productModal');
-  const body     = document.getElementById('modalBody');
+  const overlay = document.getElementById('productModal');
+  const body = document.getElementById('modalBody');
   const discPrice = (product.price * (1 - (product.discountPercentage || 0) / 100)).toFixed(2);
-  const inStock   = product.availabilityStatus === 'In Stock' || (product.stock && product.stock > 0);
+  const inStock = product.availabilityStatus === 'In Stock' || (product.stock && product.stock > 0);
   const wishlisted = Cart.isWishlisted(id);
-  const images    = (product.images && product.images.length) ? product.images : [product.thumbnail];
+  const images = product.images && product.images.length ? product.images : [product.thumbnail];
 
-  let thumbsHTML = images.slice(0, 6).map((img, i) =>
-    `<div class="modal-thumb ${i === 0 ? 'active' : ''}" data-img="${img}" onclick="switchImage(this, '${img}')">
+  let thumbsHTML = images
+    .slice(0, 6)
+    .map(
+      (img, i) =>
+        `<div class="modal-thumb ${i === 0 ? 'active' : ''}" data-img="${img}" onclick="switchImage(this, '${img}')">
        <img src="${img}" alt="Product image ${i + 1}" loading="lazy" />
      </div>`
-  ).join('');
+    )
+    .join('');
 
   let reviewsHTML = '';
   if (product.reviews && product.reviews.length) {
     reviewsHTML = `<div class="modal-reviews">
       <h4 class="reviews-title"><i class="fa-solid fa-comments"></i> Customer Reviews (${product.reviews.length})</h4>
-      ${product.reviews.slice(0, 5).map(r => `
+      ${product.reviews
+        .slice(0, 5)
+        .map(
+          (r) => `
         <div class="review-item">
           <div class="review-header">
             <span class="reviewer-name">${escapeHtml(r.reviewerName)}</span>
@@ -490,7 +544,9 @@ window.openModal = function(id) {
           </div>
           <p class="review-comment">${escapeHtml(r.comment)}</p>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>`;
   }
 
@@ -527,7 +583,9 @@ window.openModal = function(id) {
           <div class="meta-item"><p class="meta-label">Warranty</p><p class="meta-value">${escapeHtml(product.warrantyInformation || 'N/A')}</p></div>
           <div class="meta-item"><p class="meta-label">Min. Order</p><p class="meta-value">${product.minimumOrderQuantity || 1} unit(s)</p></div>
         </div>
-        ${inStock ? `
+        ${
+          inStock
+            ? `
         <div class="modal-qty-row">
           <div class="qty-ctrl">
             <button class="qty-btn" onclick="changeModalQty(-1)"><i class="fa-solid fa-minus"></i></button>
@@ -542,7 +600,9 @@ window.openModal = function(id) {
                   onclick="handleWishlistFromModal(${product.id})">
             <i class="fa-${wishlisted ? 'solid' : 'regular'} fa-heart"></i>
           </button>
-        </div>` : `<p style="color:var(--danger);font-weight:700;padding:12px 0"><i class="fa-solid fa-ban"></i> Currently out of stock</p>`}
+        </div>`
+            : `<p style="color:var(--danger);font-weight:700;padding:12px 0"><i class="fa-solid fa-ban"></i> Currently out of stock</p>`
+        }
       </div>
     </div>
     ${reviewsHTML}
@@ -552,12 +612,14 @@ window.openModal = function(id) {
   document.body.style.overflow = 'hidden';
 };
 
-window.switchImage = function(thumbEl, imgSrc) {
+window.switchImage = function (thumbEl, imgSrc) {
   document.getElementById('modalMainImg').src = imgSrc;
-  document.querySelectorAll('.modal-thumb').forEach(t => t.classList.toggle('active', t === thumbEl));
+  document
+    .querySelectorAll('.modal-thumb')
+    .forEach((t) => t.classList.toggle('active', t === thumbEl));
 };
 
-window.changeModalQty = function(delta) {
+window.changeModalQty = function (delta) {
   const input = document.getElementById('modalQty');
   if (!input) return;
   const newVal = Math.max(1, Math.min(parseInt(input.max) || 99, parseInt(input.value) + delta));
@@ -572,28 +634,34 @@ function closeModal() {
 /* =====================================================
    CART ACTIONS
    ===================================================== */
-window.addToCart = function(id) {
-  const p = allProducts.find(x => x.id === id);
+window.addToCart = function (id) {
+  const p = allProducts.find((x) => x.id === id);
   if (!p) return;
   Cart.add(p, 1);
-  showToast(`<i class="fa-solid fa-cart-plus"></i> "${p.title.slice(0, 30)}…" added to cart`, 'success');
+  showToast(
+    `<i class="fa-solid fa-cart-plus"></i> "${p.title.slice(0, 30)}…" added to cart`,
+    'success'
+  );
 };
 
-window.addToCartFromModal = function(id) {
-  const p   = allProducts.find(x => x.id === id);
+window.addToCartFromModal = function (id) {
+  const p = allProducts.find((x) => x.id === id);
   const qty = parseInt(document.getElementById('modalQty')?.value) || 1;
   if (!p) return;
   Cart.add(p, qty);
-  showToast(`<i class="fa-solid fa-cart-plus"></i> ${qty}x "${p.title.slice(0, 25)}…" added to cart`, 'success');
+  showToast(
+    `<i class="fa-solid fa-cart-plus"></i> ${qty}x "${p.title.slice(0, 25)}…" added to cart`,
+    'success'
+  );
 };
 
 /* ── Wishlist ── */
-window.handleWishlist = function(id) {
-  const p = allProducts.find(x => x.id === id);
+window.handleWishlist = function (id) {
+  const p = allProducts.find((x) => x.id === id);
   if (!p) return;
   const added = Cart.toggleWish(p);
   // Update all wishlist buttons for this product
-  document.querySelectorAll(`.wishlist-btn[data-id="${id}"]`).forEach(btn => {
+  document.querySelectorAll(`.wishlist-btn[data-id="${id}"]`).forEach((btn) => {
     btn.classList.toggle('wishlisted', added);
     btn.innerHTML = `<i class="fa-${added ? 'solid' : 'regular'} fa-heart"></i>`;
     btn.title = added ? 'Remove from Wishlist' : 'Add to Wishlist';
@@ -606,7 +674,7 @@ window.handleWishlist = function(id) {
   );
 };
 
-window.handleWishlistFromModal = function(id) {
+window.handleWishlistFromModal = function (id) {
   handleWishlist(id);
   const added = Cart.isWishlisted(id);
   const btn = document.getElementById('modalWishBtn');
@@ -619,9 +687,9 @@ window.handleWishlistFromModal = function(id) {
 /* =====================================================
    CART SIDEBAR RENDER  (called by Cart module)
    ===================================================== */
-window.renderCartSidebar = function() {
-  const items    = Cart.getItems();
-  const itemsEl  = document.getElementById('cartItems');
+window.renderCartSidebar = function () {
+  const items = Cart.getItems();
+  const itemsEl = document.getElementById('cartItems');
   const footerEl = document.getElementById('cartFooter');
   if (!itemsEl || !footerEl) return;
 
@@ -634,9 +702,10 @@ window.renderCartSidebar = function() {
     return;
   }
 
-  itemsEl.innerHTML = items.map(item => {
-    const total = (item.price * item.qty).toFixed(2);
-    return `
+  itemsEl.innerHTML = items
+    .map((item) => {
+      const total = (item.price * item.qty).toFixed(2);
+      return `
     <div class="cart-item" data-id="${item.id}">
       <div class="cart-item-img">
         <img src="${item.thumbnail}" alt="${escapeHtml(item.title)}" loading="lazy" />
@@ -660,11 +729,12 @@ window.renderCartSidebar = function() {
         </div>
       </div>
     </div>`;
-  }).join('');
+    })
+    .join('');
 
   const subtotal = Cart.getSubtotal().toFixed(2);
   const shipping = Cart.getSubtotal() > 100 ? 0 : 9.99;
-  const total    = (Cart.getSubtotal() + shipping).toFixed(2);
+  const total = (Cart.getSubtotal() + shipping).toFixed(2);
 
   footerEl.innerHTML = `
     <div class="cart-summary">
@@ -681,8 +751,11 @@ window.renderCartSidebar = function() {
   `;
 };
 
-window.handleCheckout = function() {
-  showToast('<i class="fa-solid fa-check-circle"></i> Order placed successfully! (Demo)', 'success');
+window.handleCheckout = function () {
+  showToast(
+    '<i class="fa-solid fa-check-circle"></i> Order placed successfully! (Demo)',
+    'success'
+  );
   Cart.clear();
   closeCartSidebar();
 };
@@ -690,9 +763,9 @@ window.handleCheckout = function() {
 /* =====================================================
    WISHLIST SIDEBAR RENDER
    ===================================================== */
-window.renderWishlistSidebar = function() {
+window.renderWishlistSidebar = function () {
   const items = Cart.getWishlist();
-  const el    = document.getElementById('wishlistItems');
+  const el = document.getElementById('wishlistItems');
   if (!el) return;
 
   if (items.length === 0) {
@@ -703,9 +776,10 @@ window.renderWishlistSidebar = function() {
     return;
   }
 
-  el.innerHTML = items.map(p => {
-    const discPrice = (p.price * (1 - (p.discountPercentage || 0) / 100)).toFixed(2);
-    return `
+  el.innerHTML = items
+    .map((p) => {
+      const discPrice = (p.price * (1 - (p.discountPercentage || 0) / 100)).toFixed(2);
+      return `
     <div class="cart-item">
       <div class="cart-item-img">
         <img src="${p.thumbnail}" alt="${escapeHtml(p.title)}" loading="lazy" />
@@ -714,16 +788,17 @@ window.renderWishlistSidebar = function() {
         <p class="cart-item-title">${escapeHtml(p.title)}</p>
         <p class="cart-item-price">$${discPrice}</p>
         <div class="cart-item-controls">
-          <button class="btn-add-cart" style="flex:1;height:30px;font-size:.75rem" onclick="addToCart(${p.id}); Cart.toggleWish(${JSON.stringify({id: p.id}).replace(/"/g, "'")})">
+          <button class="btn-add-cart" style="flex:1;height:30px;font-size:.75rem" onclick="addToCart(${p.id}); Cart.toggleWish(${JSON.stringify({ id: p.id }).replace(/"/g, "'")})">
             <i class="fa-solid fa-cart-plus"></i> Add to Cart
           </button>
-          <button class="cart-remove-btn" onclick="Cart.toggleWish(${JSON.stringify({id: p.id}).replace(/"/g, "'")})" title="Remove">
+          <button class="cart-remove-btn" onclick="Cart.toggleWish(${JSON.stringify({ id: p.id }).replace(/"/g, "'")})" title="Remove">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
     </div>`;
-  }).join('');
+    })
+    .join('');
 };
 
 /* =====================================================
@@ -775,7 +850,7 @@ function closeWishlistSidebar() {
    ===================================================== */
 function bindSidebarToggles() {
   // Collapsible filter sections
-  document.querySelectorAll('.toggle-filter').forEach(btn => {
+  document.querySelectorAll('.toggle-filter').forEach((btn) => {
     btn.addEventListener('click', () => {
       const target = document.getElementById(btn.dataset.target);
       const isOpen = !target.classList.contains('hidden');
@@ -802,7 +877,7 @@ function closeMobileSidebar() {
 function bindSortSelect() {
   document.getElementById('sortSelect').addEventListener('change', (e) => {
     filters.sort = e.target.value;
-    currentPage  = 1;
+    currentPage = 1;
     applyFiltersAndRender();
   });
 }
@@ -810,13 +885,15 @@ function bindSortSelect() {
 function bindPriceRanges() {
   const minInput = document.getElementById('minPrice');
   const maxInput = document.getElementById('maxPrice');
-  const minDisp  = document.getElementById('minPriceDisplay');
-  const maxDisp  = document.getElementById('maxPriceDisplay');
+  const minDisp = document.getElementById('minPriceDisplay');
+  const maxDisp = document.getElementById('maxPriceDisplay');
 
   const onRangeChange = () => {
     let min = parseInt(minInput.value);
     let max = parseInt(maxInput.value);
-    if (min > max) { [min, max] = [max, min]; }
+    if (min > max) {
+      [min, max] = [max, min];
+    }
     minDisp.textContent = min;
     maxDisp.textContent = max;
     filters.minPrice = min;
@@ -831,12 +908,14 @@ function bindPriceRanges() {
 }
 
 function bindRatingStars() {
-  document.querySelectorAll('.star-btn').forEach(btn => {
+  document.querySelectorAll('.star-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const rating = parseInt(btn.dataset.rating);
       filters.minRating = rating;
       currentPage = 1;
-      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document
+        .querySelectorAll('.star-btn')
+        .forEach((b) => b.classList.toggle('active', b === btn));
       applyFiltersAndRender();
     });
   });
@@ -856,7 +935,7 @@ function bindInStockCheckbox() {
 function setupEventListeners() {
   // Search
   const searchInput = document.getElementById('searchInput');
-  const clearBtn    = document.getElementById('searchClearBtn');
+  const clearBtn = document.getElementById('searchClearBtn');
 
   searchInput.addEventListener('input', (e) => {
     const val = e.target.value;
@@ -870,7 +949,7 @@ function setupEventListeners() {
   });
 
   clearBtn.addEventListener('click', () => {
-    searchInput.value   = '';
+    searchInput.value = '';
     clearBtn.classList.add('hidden');
     filters.search = '';
     currentPage = 1;
@@ -884,7 +963,11 @@ function setupEventListeners() {
     if (e.target === e.currentTarget) closeModal();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeModal(); closeCartSidebar(); closeWishlistSidebar(); }
+    if (e.key === 'Escape') {
+      closeModal();
+      closeCartSidebar();
+      closeWishlistSidebar();
+    }
   });
 
   // Cart sidebar

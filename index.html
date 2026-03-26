@@ -1,251 +1,278 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SmartShop – Smart Shopping Experience</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartShop – Smart Shopping Experience</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="header-inner">
+        <!-- Brand -->
+        <a href="#" class="brand" onclick="resetFilters()">
+          <span class="brand-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+          <span class="brand-name">Smart<span class="accent">Shop</span></span>
+        </a>
 
-  <!-- ===== HEADER ===== -->
-  <header class="header">
-    <div class="header-inner">
-      <!-- Brand -->
-      <a href="#" class="brand" onclick="resetFilters()">
-        <span class="brand-icon"><i class="fa-solid fa-bag-shopping"></i></span>
-        <span class="brand-name">Smart<span class="accent">Shop</span></span>
-      </a>
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search products, brands, categories…"
+            autocomplete="off"
+          />
+          <button id="searchClearBtn" class="search-clear hidden" title="Clear search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
 
-      <!-- Search Bar -->
-      <div class="search-wrapper">
-        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input
-          type="text"
-          id="searchInput"
-          class="search-input"
-          placeholder="Search products, brands, categories…"
-          autocomplete="off"
-        />
-        <button id="searchClearBtn" class="search-clear hidden" title="Clear search">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <!-- Header Actions -->
-      <div class="header-actions">
-        <button class="btn-icon" id="wishlistToggle" title="Wishlist">
-          <i class="fa-regular fa-heart"></i>
-          <span class="badge hidden" id="wishlistBadge">0</span>
-        </button>
-        <button class="btn-icon cart-btn" id="cartToggle" title="Cart">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span class="badge hidden" id="cartBadge">0</span>
-        </button>
-        <button class="btn-icon mobile-menu-btn" id="mobileMenuBtn" title="Filters">
-          <i class="fa-solid fa-sliders"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- ===== MAIN LAYOUT ===== -->
-  <div class="layout">
-
-    <!-- Sidebar Overlay (mobile) -->
-    <div class="sidebar-overlay hidden" id="sidebarOverlay"></div>
-
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <h3><i class="fa-solid fa-filter"></i> Filters</h3>
-        <button class="btn-text" id="clearFiltersBtn">Clear All</button>
-      </div>
-
-      <!-- Price Range -->
-      <div class="filter-group">
-        <h4 class="filter-title">
-          <i class="fa-solid fa-tag"></i> Price Range
-          <button class="toggle-filter" data-target="priceFilter"><i class="fa-solid fa-chevron-down"></i></button>
-        </h4>
-        <div class="filter-body" id="priceFilter">
-          <div class="price-display">
-            <span>$<span id="minPriceDisplay">0</span></span>
-            <span>$<span id="maxPriceDisplay">2000</span></span>
-          </div>
-          <div class="range-track">
-            <input type="range" id="minPrice" class="range-input" min="0" max="2000" value="0" step="1" />
-            <input type="range" id="maxPrice" class="range-input" min="0" max="2000" value="2000" step="1" />
-          </div>
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <button class="btn-icon" id="wishlistToggle" title="Wishlist">
+            <i class="fa-regular fa-heart"></i>
+            <span class="badge hidden" id="wishlistBadge">0</span>
+          </button>
+          <button class="btn-icon cart-btn" id="cartToggle" title="Cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="badge hidden" id="cartBadge">0</span>
+          </button>
+          <button class="btn-icon mobile-menu-btn" id="mobileMenuBtn" title="Filters">
+            <i class="fa-solid fa-sliders"></i>
+          </button>
         </div>
       </div>
+    </header>
 
-      <!-- Rating Filter -->
-      <div class="filter-group">
-        <h4 class="filter-title">
-          <i class="fa-solid fa-star"></i> Min Rating
-          <button class="toggle-filter" data-target="ratingFilter"><i class="fa-solid fa-chevron-down"></i></button>
-        </h4>
-        <div class="filter-body" id="ratingFilter">
-          <div class="rating-stars" id="ratingStars">
-            <button class="star-btn active" data-rating="0">All</button>
-            <button class="star-btn" data-rating="1">1<i class="fa-solid fa-star"></i>+</button>
-            <button class="star-btn" data-rating="2">2<i class="fa-solid fa-star"></i>+</button>
-            <button class="star-btn" data-rating="3">3<i class="fa-solid fa-star"></i>+</button>
-            <button class="star-btn" data-rating="4">4<i class="fa-solid fa-star"></i>+</button>
+    <!-- ===== MAIN LAYOUT ===== -->
+    <div class="layout">
+      <!-- Sidebar Overlay (mobile) -->
+      <div class="sidebar-overlay hidden" id="sidebarOverlay"></div>
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h3><i class="fa-solid fa-filter"></i> Filters</h3>
+          <button class="btn-text" id="clearFiltersBtn">Clear All</button>
+        </div>
+
+        <!-- Price Range -->
+        <div class="filter-group">
+          <h4 class="filter-title">
+            <i class="fa-solid fa-tag"></i> Price Range
+            <button class="toggle-filter" data-target="priceFilter">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </h4>
+          <div class="filter-body" id="priceFilter">
+            <div class="price-display">
+              <span>$<span id="minPriceDisplay">0</span></span>
+              <span>$<span id="maxPriceDisplay">2000</span></span>
+            </div>
+            <div class="range-track">
+              <input
+                type="range"
+                id="minPrice"
+                class="range-input"
+                min="0"
+                max="2000"
+                value="0"
+                step="1"
+              />
+              <input
+                type="range"
+                id="maxPrice"
+                class="range-input"
+                min="0"
+                max="2000"
+                value="2000"
+                step="1"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Availability -->
-      <div class="filter-group">
-        <h4 class="filter-title">
-          <i class="fa-solid fa-circle-check"></i> Availability
-          <button class="toggle-filter" data-target="availFilter"><i class="fa-solid fa-chevron-down"></i></button>
-        </h4>
-        <div class="filter-body" id="availFilter">
-          <label class="checkbox-label">
-            <input type="checkbox" id="inStockOnly" />
-            <span class="checkmark"></span>
-            In Stock Only
-          </label>
+        <!-- Rating Filter -->
+        <div class="filter-group">
+          <h4 class="filter-title">
+            <i class="fa-solid fa-star"></i> Min Rating
+            <button class="toggle-filter" data-target="ratingFilter">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </h4>
+          <div class="filter-body" id="ratingFilter">
+            <div class="rating-stars" id="ratingStars">
+              <button class="star-btn active" data-rating="0">All</button>
+              <button class="star-btn" data-rating="1">1<i class="fa-solid fa-star"></i>+</button>
+              <button class="star-btn" data-rating="2">2<i class="fa-solid fa-star"></i>+</button>
+              <button class="star-btn" data-rating="3">3<i class="fa-solid fa-star"></i>+</button>
+              <button class="star-btn" data-rating="4">4<i class="fa-solid fa-star"></i>+</button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Categories -->
-      <div class="filter-group">
-        <h4 class="filter-title">
-          <i class="fa-solid fa-layer-group"></i> Categories
-          <button class="toggle-filter" data-target="catFilter"><i class="fa-solid fa-chevron-down"></i></button>
-        </h4>
-        <div class="filter-body" id="catFilter">
-          <div class="category-list" id="categoryList">
+        <!-- Availability -->
+        <div class="filter-group">
+          <h4 class="filter-title">
+            <i class="fa-solid fa-circle-check"></i> Availability
+            <button class="toggle-filter" data-target="availFilter">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </h4>
+          <div class="filter-body" id="availFilter">
+            <label class="checkbox-label">
+              <input type="checkbox" id="inStockOnly" />
+              <span class="checkmark"></span>
+              In Stock Only
+            </label>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="filter-group">
+          <h4 class="filter-title">
+            <i class="fa-solid fa-layer-group"></i> Categories
+            <button class="toggle-filter" data-target="catFilter">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </h4>
+          <div class="filter-body" id="catFilter">
+            <div class="category-list" id="categoryList">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <main class="main-content">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="results-count" id="resultsCount">Loading products…</span>
+            <div class="active-filters" id="activeFilters"></div>
+          </div>
+          <div class="toolbar-right">
+            <div class="view-toggle">
+              <button class="view-btn active" id="gridViewBtn" title="Grid view">
+                <i class="fa-solid fa-grid-2"></i>
+              </button>
+              <button class="view-btn" id="listViewBtn" title="List view">
+                <i class="fa-solid fa-list"></i>
+              </button>
+            </div>
+            <select class="sort-select" id="sortSelect">
+              <option value="default">Sort: Featured</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating-desc">Rating: Best First</option>
+              <option value="discount-desc">Biggest Discount</option>
+              <option value="name-asc">Name: A–Z</option>
+              <option value="name-desc">Name: Z–A</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hero Banner -->
+        <div class="hero-banner" id="heroBanner">
+          <div class="hero-text">
+            <h1>Welcome to <span class="accent">SmartShop</span></h1>
+            <p>Discover thousands of products at amazing prices</p>
+          </div>
+          <div class="hero-stats" id="heroStats">
             <!-- Populated dynamically -->
           </div>
         </div>
-      </div>
-    </aside>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="main-content">
+        <!-- Skeleton / Product Grid -->
+        <div class="product-grid" id="productGrid">
+          <!-- Skeletons shown on load -->
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+          <div class="skeleton-card" aria-hidden="true"></div>
+        </div>
 
-      <!-- Toolbar -->
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <span class="results-count" id="resultsCount">Loading products…</span>
-          <div class="active-filters" id="activeFilters"></div>
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+          <i class="fa-solid fa-magnifying-glass-minus"></i>
+          <h3>No products found</h3>
+          <p>Try adjusting your search or filters</p>
+          <button class="btn-primary" onclick="resetFilters()">Reset Filters</button>
         </div>
-        <div class="toolbar-right">
-          <div class="view-toggle">
-            <button class="view-btn active" id="gridViewBtn" title="Grid view">
-              <i class="fa-solid fa-grid-2"></i>
-            </button>
-            <button class="view-btn" id="listViewBtn" title="List view">
-              <i class="fa-solid fa-list"></i>
-            </button>
-          </div>
-          <select class="sort-select" id="sortSelect">
-            <option value="default">Sort: Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="rating-desc">Rating: Best First</option>
-            <option value="discount-desc">Biggest Discount</option>
-            <option value="name-asc">Name: A–Z</option>
-            <option value="name-desc">Name: Z–A</option>
-          </select>
-        </div>
-      </div>
 
-      <!-- Hero Banner -->
-      <div class="hero-banner" id="heroBanner">
-        <div class="hero-text">
-          <h1>Welcome to <span class="accent">SmartShop</span></h1>
-          <p>Discover thousands of products at amazing prices</p>
-        </div>
-        <div class="hero-stats" id="heroStats">
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+      </main>
+    </div>
+
+    <!-- ===== PRODUCT DETAIL MODAL ===== -->
+    <div class="modal-overlay hidden" id="productModal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" id="modalClose" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="modal-body" id="modalBody">
           <!-- Populated dynamically -->
         </div>
       </div>
+    </div>
 
-      <!-- Skeleton / Product Grid -->
-      <div class="product-grid" id="productGrid">
-        <!-- Skeletons shown on load -->
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
+    <!-- ===== CART SIDEBAR ===== -->
+    <div class="cart-overlay hidden" id="cartOverlay"></div>
+    <aside class="cart-sidebar hidden" id="cartSidebar">
+      <div class="cart-header">
+        <h3><i class="fa-solid fa-cart-shopping"></i> Your Cart</h3>
+        <button class="btn-icon" id="cartClose" title="Close cart">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
-
-      <!-- Empty State -->
-      <div class="empty-state hidden" id="emptyState">
-        <i class="fa-solid fa-magnifying-glass-minus"></i>
-        <h3>No products found</h3>
-        <p>Try adjusting your search or filters</p>
-        <button class="btn-primary" onclick="resetFilters()">Reset Filters</button>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination" id="pagination"></div>
-    </main>
-  </div>
-
-  <!-- ===== PRODUCT DETAIL MODAL ===== -->
-  <div class="modal-overlay hidden" id="productModal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" id="modalClose" title="Close">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="modal-body" id="modalBody">
+      <div class="cart-items" id="cartItems">
         <!-- Populated dynamically -->
       </div>
-    </div>
-  </div>
+      <div class="cart-footer" id="cartFooter">
+        <!-- Populated dynamically -->
+      </div>
+    </aside>
 
-  <!-- ===== CART SIDEBAR ===== -->
-  <div class="cart-overlay hidden" id="cartOverlay"></div>
-  <aside class="cart-sidebar hidden" id="cartSidebar">
-    <div class="cart-header">
-      <h3><i class="fa-solid fa-cart-shopping"></i> Your Cart</h3>
-      <button class="btn-icon" id="cartClose" title="Close cart">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="cart-items" id="cartItems">
-      <!-- Populated dynamically -->
-    </div>
-    <div class="cart-footer" id="cartFooter">
-      <!-- Populated dynamically -->
-    </div>
-  </aside>
+    <!-- ===== WISHLIST SIDEBAR ===== -->
+    <div class="wishlist-overlay hidden" id="wishlistOverlay"></div>
+    <aside class="wishlist-sidebar hidden" id="wishlistSidebar">
+      <div class="cart-header">
+        <h3><i class="fa-regular fa-heart"></i> Wishlist</h3>
+        <button class="btn-icon" id="wishlistClose" title="Close wishlist">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="cart-items" id="wishlistItems">
+        <!-- Populated dynamically -->
+      </div>
+    </aside>
 
-  <!-- ===== WISHLIST SIDEBAR ===== -->
-  <div class="wishlist-overlay hidden" id="wishlistOverlay"></div>
-  <aside class="wishlist-sidebar hidden" id="wishlistSidebar">
-    <div class="cart-header">
-      <h3><i class="fa-regular fa-heart"></i> Wishlist</h3>
-      <button class="btn-icon" id="wishlistClose" title="Close wishlist">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="cart-items" id="wishlistItems">
-      <!-- Populated dynamically -->
-    </div>
-  </aside>
+    <!-- ===== TOAST NOTIFICATION ===== -->
+    <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ===== TOAST NOTIFICATION ===== -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- Scripts -->
-  <script src="cart.js"></script>
-  <script src="app.js"></script>
-</body>
+    <!-- Scripts -->
+    <script src="cart.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
