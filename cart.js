@@ -3,6 +3,9 @@
    Cart & Wishlist management with localStorage
    ===================================================== */
 
+/* global renderCartSidebar, renderWishlistSidebar */
+
+// eslint-disable-next-line no-unused-vars
 const Cart = (() => {
   const CART_KEY = 'smartshop_cart';
   const WISH_KEY = 'smartshop_wishlist';

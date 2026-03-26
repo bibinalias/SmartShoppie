@@ -771,36 +771,8 @@ function closeWishlistSidebar() {
 }
 
 /* =====================================================
-   EVENT LISTENERS
+   SIDEBAR FILTER TOGGLES
    ===================================================== */
-function setupEventListeners() {
-  // Modal close
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('productModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeModal(); closeCartSidebar(); closeWishlistSidebar(); }
-  });
-
-  // Cart sidebar
-  document.getElementById('cartToggle').addEventListener('click', openCartSidebar);
-  document.getElementById('cartClose').addEventListener('click', closeCartSidebar);
-  document.getElementById('cartOverlay').addEventListener('click', closeCartSidebar);
-
-  // Wishlist sidebar
-  document.getElementById('wishlistToggle').addEventListener('click', openWishlistSidebar);
-  document.getElementById('wishlistClose').addEventListener('click', closeWishlistSidebar);
-  document.getElementById('wishlistOverlay').addEventListener('click', closeWishlistSidebar);
-
-  // Mobile sidebar toggle
-  document.getElementById('mobileMenuBtn').addEventListener('click', openMobileSidebar);
-  document.getElementById('sidebarOverlay').addEventListener('click', closeMobileSidebar);
-
-  // Clear filters
-  document.getElementById('clearFiltersBtn').addEventListener('click', resetFilters);
-}
-
 function bindSidebarToggles() {
   // Collapsible filter sections
   document.querySelectorAll('.toggle-filter').forEach(btn => {
